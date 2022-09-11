@@ -1,6 +1,6 @@
 <template>
     <!-- <img alt="Vue logo" src="../assets/boat.jpg"> -->
-    <MainControl  mt-0/>
+    <MainControl/>
 </template>
 
 <script>

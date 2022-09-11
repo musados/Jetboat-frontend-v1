@@ -1,10 +1,10 @@
 <template>
-  <v-app id="app" class="pa-0 ma-0 grey" style="height:100%">
+  <v-app id="app" class="pa-0 ma-0" style="height:100%">
     <!-- <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
     </div> -->
-    <router-view class="green pa-0 ma-0" style="height:100%"/>
+    <router-view class="pa-0 ma-0" style="height:100%"/>
   </v-app>
 </template>
 
