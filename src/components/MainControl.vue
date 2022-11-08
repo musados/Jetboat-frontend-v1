@@ -1,16 +1,17 @@
 <template>
-  <v-card height="100%" width="100%" class="mt-0 pa-0" flat>
+  <v-card max-height="100vh" width="100%" class="mt-0 pa-0" flat>
     <v-toolbar flat 
       dense 
       class="background" 
       style="border-bottom:1px solid lightblue;z-index:1" 
       height="48">
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer">
+      <v-app-bar-nav-icon class="" @click.stop="drawer = !drawer">
       <template v-slot:default>
         <v-icon small>mdi-poll</v-icon>
       </template></v-app-bar-nav-icon>
-      <v-toolbar-title class="primary--text">Jetboat</v-toolbar-title>
+      <v-toolbar-title class="primary--text px-0 mx-0">Jetboat</v-toolbar-title>
       <v-divider class="mx-3" vertical inset></v-divider>
+      <v-spacer/>
       <SensorsRow :sensors="sensorsData"/>
     </v-toolbar>
 
@@ -38,6 +39,14 @@
           </v-col>
           
           <v-spacer/>
+        </v-row>
+        <v-row>
+          <v-col>
+            <img :src="`${BoatAddress}/video`"/>
+        <!-- <video style="position:fixed; top:0;bottom:0;right:0;left:0;max-height:100vh !important" width="1200" controls muted="muted">
+            <source :src="`${BoatAddress}/video`"  />
+        </video> -->
+          </v-col>
         </v-row>
         <v-row dense >
           <v-col cols="auto">
@@ -87,7 +96,7 @@
       bottom
       v-model="drawer"
     >
-    <v-data-table v-if="sensorsData"
+    <!-- <v-data-table v-if="sensorsData"
         :headers="temperaturesHeaders"
         :items="getTemperaturesItems"
         hide-default-footer>
@@ -95,31 +104,26 @@
           <v-icon>{{tempIcons[item.name]}}</v-icon>
         </template>
         <template v-slot:[`item.value`]="{item}">
-          {{item.value.toFixed(1)}}<span class="text-caption">c</span>
+          {{item.value? item.value.toFixed(1):'---'}}<span class="text-caption">c</span>
         </template>
-      </v-data-table>
+      </v-data-table> -->
 
 
-      <v-list v-if="sensorsData" dense>
-        <v-list-item
-          v-for="item in Object.keys(sensorsData.temperature)"
-          :key="item"
-          link
-        >
-          <v-list-item-icon class="">
-            <v-icon>{{ tempIcons[item] }}</v-icon>
-          </v-list-item-icon>
+      <!-- <v-data-table v-if="sensorsData" dense
+        :headers="[{value: 'icon', text: '#'},{value: 'name', text: 'Name'}, {value: 'temperature', text: 'Temperature'}]"
+        :items="Object.values(sensorsData.temperature)">
+          <template v-slot:[`item.icon`]="{item}">
+            <v-icon>{{ tempIcons[item.name] }}</v-icon>
+          </template> -->
     
-          <v-list-item-content class=" px-0" style="max-width:fit-content !important">
+          <!-- <v-list-item-content class=" px-0" style="max-width:fit-content !important">
             <v-list-item-title style="max-width:fit-content !important" class="green px-5">{{ item }}</v-list-item-title>
           </v-list-item-content>
     
           <v-list-item-content style="max-width:fit-content !important">
-            <v-list-item-title style="max-width:fit-content !important">{{ sensorsData.temperature[item].toFixed(1) }}</v-list-item-title>
-          </v-list-item-content>
-          <v-spacer/>
-        </v-list-item>
-      </v-list>
+            <v-list-item-title style="max-width:fit-content !important">{{ sensorsData.temperature[item] ? sensorsData.temperature[item].toFixed(1) : '---' }}</v-list-item-title>
+          </v-list-item-content> -->
+      <!-- </v-data-table> -->
     
       <template v-slot:append>
         <div class="pa-2">
@@ -305,19 +309,19 @@ export default {
       this.rightY = event.y;
     },
 
-    sendApiData() {
+    async sendApiData() {
       let data = {
-        throttle: this.leftYValue.toFixed(0),
-        yaw: this.leftXValue.toFixed(0),
-        pitch: this.rightYValue.toFixed(0),
-        roll: this.rightXValue.toFixed(0),
+        throttle: this.leftYValue? this.leftYValue.toFixed(0): 0,
+        yaw: this.leftXValue? this.leftXValue.toFixed(0): 0,
+        pitch: this.rightYValue? this.rightYValue.toFixed(0): 0,
+        roll: this.rightXValue?this.rightXValue.toFixed(0):0,
         channels:[],
       }
       // console.log(data)
       axios.post(`${this.BoatAddress}/control`, data);
     },
 
-    getApiSensorsData(){
+    async getApiSensorsData(){
       axios.get(`${this.BoatAddress}/sensor`).then(res=>{
         if(res && res.data.success === true){
           this.sensorsData =  res.data.data;
